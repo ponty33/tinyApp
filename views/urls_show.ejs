@@ -13,7 +13,13 @@
         <ul>
           <% for (let url in urls) { %>
               <% if (url === shortURL) { %>
-                  <li ><%= `${url}:` %> <%= `${urls[url]}` %></li>                
+                  <li >
+                    <h1>ShortURL :<%= `${url}` %></h1>
+                    <form id="update" method="POST" action="/urls/<%= `${url}`%>">
+                      <input id="update" type="text" name="update" placeholder="<%=`${urls[url]}`%>" style="width: 300px">
+                      <input type="submit" value="UPDATE">
+                    </form>
+                  </li>                
               <% } %>
             <% }; %>
       </ul>

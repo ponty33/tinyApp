@@ -1,4 +1,4 @@
-"use strict";
+
 var express = require("express");
 var app = express();
 const bodyParser = require("body-parser");
@@ -9,12 +9,16 @@ app.set("view engine", "ejs");
 
 var urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com",
-  "g47fKf": "http://www.nba.com"
+  "9sm5xK": "http://www.google.com"
 };
 
 function generateRandomString() {
-
+  let text = "";
+  let char = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+  for (var i = 0; i < 6; i++) {
+    text += char.charAt(Math.floor(Math.random() * (62 - 0)));
+  }
+  return text;
 }
 
 
@@ -45,12 +49,25 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
-  console.log(req.body); 
-  res.send("Ok");         
+  let genId = generateRandomString();
+  urlDatabase[genId] = req.body.longURL;
+  res.redirect("/urls");       
 });
 
+app.post("/urls/:id/delete", (req, res) => {
+  let id = req.params.id
+  delete urlDatabase[id];
+  res.redirect("/urls")         
+});
+
+app.post("/urls/:id", (req, res) => {
+  urlDatabase[req.params.id] = req.body.update;
+  res.redirect("/urls")
+})
+
 app.get("/u/:shortURL", (req, res) => {
-  let longURL = "/u/:shortURL"
+  let shortUrlKey = req.params['shortURL'];
+  let longURL = urlDatabase[shortUrlKey];
   res.redirect(longURL);
 });
 
