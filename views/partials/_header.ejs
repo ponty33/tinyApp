@@ -1,1 +1,28 @@
-//header
+<nav class="navbar navbar-default" role="navigation">
+    <div class="container-fluid">
+    
+        <div class="navbar-header">
+            <a class="navbar-brand" href="/urls">
+                <span class="glyphicon glyphicon glyphicon-tree-deciduous"></span>
+                <h2>Tiny App</h2>
+            </a>
+            <% if(username){ %>
+              <form id="logout" method="POST" action="/logout" style="margin: 3px;">
+                <h4 style="display: inline-block">USER NAME: <p><%= username %></p></h4>
+                <button type="submit">LOGOUT</button>
+              </form>
+            <% } else{ %>  
+              <form id="userName" method="POST" action="/login" style="margin: 3px;">
+                <h4 style="display: inline-block">USER NAME </h4>
+                <input id="userName" type="text" name="userName" placeholder="Name Please" style="width: 150px;">
+                <button type="submit">SUBMIT</button>
+              </form>
+           <% } %>
+
+
+            
+            
+        </div>
+    
+    </div>
+    </nav>
