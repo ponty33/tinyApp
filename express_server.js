@@ -4,6 +4,9 @@ var app = express();
 const bodyParser = require("body-parser");
 var PORT = 8080;
 var cookieParser = require('cookie-parser')
+const bcrypt = require('bcrypt');
+// const password = "purple-monkey-dinosaur"; // you will probably this from req.params
+// const hashedPassword = bcrypt.hashSync(password, 10);
 
 
 app.use(bodyParser.urlencoded({extended: true}));
@@ -53,23 +56,22 @@ function generateRandomString() {
 }
 
 
-app.get("/", (req, res) => {
-  res.send("Hello!");
-  // Cookies that have not been signed
-});
+// app.get("/", (req, res) => {
+//   res.send("Hello!");
+// });
 
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
 
-app.get("/hello", (req, res) => {
-  let templateVars = { greeting: 'Hello World!' };
+app.get("/", (req, res) => {
+  let templateVars = { userData: users, userData: users[req.cookies.user_id] }
   res.render("hello_world", templateVars);
 });
 
 app.get("/urls", (req, res) => {
   if (!req.cookies.user_id) {
-    res.send("LOGIN or REGISTER FIRST!");
+    return res.redirect("/");
   } 
   let templateVars = { userData: users[req.cookies.user_id], urls: urlsForUser(req.cookies.user_id) };
   res.render("urls_index", templateVars);
@@ -111,9 +113,11 @@ app.post("/login", (req, res) => {
     return res.status(403).send("YOU SHALL NOT PASS");
   }
 
+  // bcrypt.compareSync(password, users[user].password); 
+
   for (let user in users) {
     if (users[user].email === email) {
-      if (users[user].password === password) {
+      if (bcrypt.compareSync(password, users[user].password)) {
         res.cookie('user_id', users[user].id);
         return res.redirect("/urls"); 
       }
@@ -130,7 +134,9 @@ app.post("/logout", (req, res) => {
 
 app.post("/urls", (req, res) => {
   let genId = generateRandomString();
-  urlDatabase[genId] = req.body.longURL;
+  urlDatabase[genId] = [genId];
+  urlDatabase[genId].longURL = req.body.longURL;
+  urlDatabase[genId].user_id = req.cookies.user_id;
   res.redirect("/urls");       
 });
 
@@ -179,15 +185,18 @@ app.post("/register", (req, res) => {
       return res.status(400).send("YOU SHALL NOT USE THAT!");
     }
   }
+
+  const encrypPassword = bcrypt.hashSync(password, 10);
   let randId = generateRandomString();
   users[randId] = {
     id: randId,
     email: email,
-    password: password
+    password: encrypPassword
   };
+
+  console.log(users)
   res.cookie('user_id', users[randId].id);
   res.redirect("urls");
 });
-
 
 

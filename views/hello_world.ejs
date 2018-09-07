@@ -1,1 +1,21 @@
-<h1><%= greeting %></h1> 
+
+<% if(userData){ %>
+  <h1>HELLO!</h1>
+  <form id="logout" method="POST" action="/logout" style="margin: 3px;">
+    <h4 style="display: inline-block"><%= userData.email %></h4>
+    <button type="submit">LOGOUT</button>
+  </form>
+  <form id="hello" method="GET" action="/urls" style="margin: 3px;">
+    <button type="submit">URL list</button>
+  </form>
+  
+
+<% } else{ %>  
+  <h1>Hello! Please login or register!</h1>
+  <form id="login" method="GET" action="/login" style="margin: 3px; display: inline;">
+    <button type="submit">LOGIN</button>
+  </form>
+  <form id="regist" method="GET" action="/register" style="margin:3px;">
+    <button type="submit">REGISTER</button>
+  </form>
+<% } %>
