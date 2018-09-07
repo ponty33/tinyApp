@@ -6,16 +6,17 @@
                 <span class="glyphicon glyphicon glyphicon-tree-deciduous"></span>
                 <h2>Tiny App</h2>
             </a>
-            <% if(username){ %>
+            <% if(userData){ %>
               <form id="logout" method="POST" action="/logout" style="margin: 3px;">
-                <h4 style="display: inline-block">USER NAME: <p><%= username %></p></h4>
+                <h4 style="display: inline-block"><%= userData.email %></h4>
                 <button type="submit">LOGOUT</button>
               </form>
             <% } else{ %>  
-              <form id="userName" method="POST" action="/login" style="margin: 3px;">
-                <h4 style="display: inline-block">USER NAME </h4>
-                <input id="userName" type="text" name="userName" placeholder="Name Please" style="width: 150px;">
-                <button type="submit">SUBMIT</button>
+              <form id="login" method="GET" action="/login" style="margin: 3px; display: inline;">
+                <button type="submit">LOGIN</button>
+              </form>
+              <form id="regist" method="GET" action="/register" style="margin:3px;">
+                <button type="submit">REGISTER</button>
               </form>
            <% } %>
 

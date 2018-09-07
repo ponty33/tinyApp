@@ -15,7 +15,7 @@
           <% for (let url in urls) { %>
               <% if (urls.hasOwnProperty(url)) { %>
                   <li >
-                    <a href="/u/<%=`${url}`%>"><%= `http://localhost:8080/u/${url}` %></a> <%= `: ${urls[url]}` %>
+                    <a href="/u/<%=`${url}`%>"><%= `http://localhost:8080/u/${url}` %></a> <%= `: ${urls[url].longURL}` %>
                     <form id="delete" method="POST" action="/urls/<%= `${url}`%>/delete">
                       <input type="submit" value="Delete">
                       <a href="/urls/<%=`${url}`%>">EDIT</a>

@@ -16,7 +16,7 @@
                   <li >
                     <h1>ShortURL :<%= `${url}` %></h1>
                     <form id="update" method="POST" action="/urls/<%= `${url}`%>">
-                      <input id="update" type="text" name="update" placeholder="<%=`${urls[url]}`%>" style="width: 300px">
+                      <input id="update" type="text" name="update" placeholder="<%=`${urls[url].longURL}`%>" style="width: 300px">
                       <input type="submit" value="UPDATE">
                     </form>
                   </li>                
