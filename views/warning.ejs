@@ -1,0 +1,19 @@
+<body>
+    <header>
+        <% include ./partials/_header %>
+    </header>
+    <main>
+      <% if(userData){ %>
+      <form id="create" method="GET" action="/urls/new">
+        <input type="submit" value="ADD NEW">
+      </form>
+      <% } %>
+      <div class="row">
+        <div>
+          <% if(!userData){ %>
+            <h1>YOU NEED TO LOGIN OR REGISTER!</h1>
+          <% } %>
+        </div>
+      </div>
+    </main>
+    </body>

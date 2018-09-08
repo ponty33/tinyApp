@@ -3,17 +3,13 @@ var express = require("express");
 var app = express();
 const bodyParser = require("body-parser");
 var PORT = 8080;
-// var cookieParser = require('cookie-parser')
 const bcrypt = require('bcrypt');
 var cookieSession = require('cookie-session');
 app.use(cookieSession({
   name: 'session',
   keys: ["lighthouse"]
 }));
-
-
 app.use(bodyParser.urlencoded({extended: true}));
-// app.use(cookieParser())
 app.set("view engine", "ejs");
 
 var urlDatabase = {
@@ -51,23 +47,23 @@ function generateRandomString() {
   return text;
 }
 
-
-// app.get("/", (req, res) => {
-//   res.send("Hello!");
-// });
-
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
 
 app.get("/", (req, res) => {
-  let templateVars = { userData: users, userData: users[req.session.user_id] }
+  let templateVars = { userData: users, userData: users[req.session.user_id] };
   res.render("hello_world", templateVars);
+});
+
+app.get("/warning", (req, res) => {
+  let templateVars = { userData: users, userData: users[req.session.user_id] };
+  res.render("warning", templateVars);
 });
 
 app.get("/urls", (req, res) => {
   if (!req.session.user_id) {
-    return res.redirect("/");
+    return res.redirect("/warning");
   } 
   let templateVars = { userData: users[req.session.user_id], urls: urlsForUser(req.session.user_id) };
   res.render("urls_index", templateVars);
@@ -91,14 +87,17 @@ app.listen(PORT, () => {
 });
 
 app.get("/login", (req, res) => {
-  res.render("login")
+  if (req.session.user_id) {
+    return res.redirect("/urls");
+  }
+  res.render("login");
 })
 
 app.get("/urls/new", (req, res) => {
   if (!req.session.user_id) {
     return res.redirect("../login");
   } 
-  let templateVars = { userData: users, userData: users[req.session.user_id] }
+  let templateVars = { userData: users, userData: users[req.session.user_id] };
   res.render("urls_new", templateVars);
 });
 
@@ -108,8 +107,6 @@ app.post("/login", (req, res) => {
   if (!email || !password) {
     return res.status(403).send("YOU SHALL NOT PASS");
   }
-
-  // bcrypt.compareSync(password, users[user].password); 
 
   for (let user in users) {
     if (users[user].email === email) {
@@ -121,12 +118,12 @@ app.post("/login", (req, res) => {
     }
   }
   res.status(403).send("YOU SHALL NOT PASS");
-})
+});
 
 app.post("/logout", (req, res) => {
   req.session = null;
   res.redirect("/urls");  
-})
+});
 
 app.post("/urls", (req, res) => {
   let genId = generateRandomString();
@@ -140,31 +137,55 @@ app.post("/urls/:id/delete", (req, res) => {
   if (req.session.user_id !== urlDatabase[req.params.id].user_id) {
     return res.status(400).send("YOU DO NOT OWN THIS!"); 
   }
-  let id = req.params.id
+  let id = req.params.id;
   delete urlDatabase[id];
-  res.redirect("/urls")         
+  res.redirect("/urls");       
 });
 
 app.post("/urls/:id", (req, res) => {
+  if (req.session.user_id !== urlDatabase[req.params.id].user_id) {
+    return res.status(400).send("YOU DO NOT OWN THIS!"); 
+  }
   urlDatabase[req.params.id].longURL = req.body.update;
-  res.redirect("/urls")
-})
+  res.redirect("/urls");
+});
+
+app.get("/warning3", (req, res) => {
+  let templateVars = { userData: users, userData: users[req.session.user_id] };
+  res.render("notExist", templateVars);
+});
 
 app.get("/u/:shortURL", (req, res) => {
   let shortUrlKey = req.params['shortURL'];
   let longURL = urlDatabase[shortUrlKey].longURL;
+  if (longURL === undefined) {
+    return res.redirect("/warning3");
+  }
   res.redirect(longURL);
 });
 
+app.get("/warning2", (req, res) => {
+  let templateVars = { userData: users, userData: users[req.session.user_id] }
+  res.render("notYours", templateVars);
+});
+
 app.get("/urls/:id", (req, res) => {
+  if (!req.session.user_id) {
+    return res.redirect("/warning");
+  } 
+
   if (req.session.user_id !== urlDatabase[req.params.id].user_id) {
-    return res.status(400).send("YOU DO NOT OWN THIS!"); 
+    return res.redirect("/warning2");
   } 
   let templateVars = { userData: users[req.session.user_id], shortURL: req.params.id, urls: urlDatabase };
   res.render("urls_show", templateVars);
 });
 
 app.get("/register", (req, res) => {
+  if (req.session.user_id) {
+    return res.redirect("/urls");
+  }
+
   let templateVars = { userData: users }
   res.render("register", templateVars);
 });

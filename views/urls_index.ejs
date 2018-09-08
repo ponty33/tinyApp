@@ -8,9 +8,11 @@
       <% include ./partials/_header %>
   </header>
   <main>
+    <% if(userData){ %>
     <form id="create" method="GET" action="/urls/new">
       <input type="submit" value="ADD NEW">
     </form>
+    <% } %>
     <div class="row">
       <div>
         
@@ -27,6 +29,9 @@
               <% } %>
             <% }; %>
         </ul>
+        <% if(!userData){ %>
+          PLEASE LOGIN FIRST!
+        <% } %>
       </div>
     </div>
   </main>
